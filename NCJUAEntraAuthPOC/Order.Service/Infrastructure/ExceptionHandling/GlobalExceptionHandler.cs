@@ -1,0 +1,41 @@
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Order.Service.Infrastructure.ExceptionHandling;
+
+/// <summary>
+/// Converts unhandled exceptions into RFC 7807 responses.
+/// </summary>
+public sealed class GlobalExceptionHandler : IExceptionHandler
+{
+    private readonly ILogger<GlobalExceptionHandler> _logger;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GlobalExceptionHandler"/> class.
+    /// </summary>
+    /// <param name="logger">The logger.</param>
+    public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+    {
+        _logger = logger;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+    {
+        _logger.LogError(exception, "Unhandled exception processing {Method} {Path}", httpContext.Request.Method, httpContext.Request.Path);
+
+        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+        var response = new ProblemDetails
+        {
+            Title = "An unexpected error occurred.",
+            Detail = "The request could not be completed.",
+            Status = StatusCodes.Status500InternalServerError,
+            Instance = httpContext.Request.Path
+        };
+
+        await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
+
+        return true;
+    }
+}

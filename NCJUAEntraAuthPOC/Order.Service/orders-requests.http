@@ -1,0 +1,112 @@
+@baseUrl = https://localhost:7201
+@jwtToken = Bearer YOUR_JWT_TOKEN_HERE
+
+# Sample GUIDs for testing
+@orderId1 = 550e8400-e29b-41d4-a716-446655440000
+@orderId2 = 550e8400-e29b-41d4-a716-446655440001
+@orderId3 = 550e8400-e29b-41d4-a716-446655440002
+
+###############################################################################
+# ORDER SERVICE - CRUD OPERATIONS
+###############################################################################
+
+### Get All Orders
+GET {{baseUrl}}/api/orders
+Authorization: {{jwtToken}}
+
+###
+
+### Create Order 1
+POST {{baseUrl}}/api/orders
+Authorization: {{jwtToken}}
+Content-Type: application/json
+
+{
+  "productName": "Laptop",
+  "quantity": 2,
+  "unitPrice": 999.99,
+  "orderDate": "2026-06-30T10:00:00Z"
+}
+
+###
+
+### Create Order 2
+POST {{baseUrl}}/api/orders
+Authorization: {{jwtToken}}
+Content-Type: application/json
+
+{
+  "productName": "Mouse",
+  "quantity": 5,
+  "unitPrice": 29.99,
+  "orderDate": "2026-06-30T11:00:00Z"
+}
+
+###
+
+### Create Order 3
+POST {{baseUrl}}/api/orders
+Authorization: {{jwtToken}}
+Content-Type: application/json
+
+{
+  "productName": "Keyboard",
+  "quantity": 3,
+  "unitPrice": 79.99,
+  "orderDate": "2026-06-30T12:00:00Z"
+}
+
+###
+
+### Get Order by ID
+GET {{baseUrl}}/api/orders/{{orderId1}}
+Authorization: {{jwtToken}}
+
+###
+
+### Update Order
+PUT {{baseUrl}}/api/orders/{{orderId1}}
+Authorization: {{jwtToken}}
+Content-Type: application/json
+
+{
+  "productName": "Laptop Pro",
+  "quantity": 3,
+  "unitPrice": 1299.99,
+  "orderDate": "2026-06-30T13:00:00Z"
+}
+
+###
+
+### Delete Order
+DELETE {{baseUrl}}/api/orders/{{orderId1}}
+Authorization: {{jwtToken}}
+
+###
+
+### Get All Orders After Delete
+GET {{baseUrl}}/api/orders
+Authorization: {{jwtToken}}
+
+###
+
+###############################################################################
+# ERROR CASES
+###############################################################################
+
+### Try to access without Authorization (Should return 401)
+GET {{baseUrl}}/api/orders
+
+###
+
+### Try to access with invalid token (Should return 401)
+GET {{baseUrl}}/api/orders
+Authorization: Bearer invalid_token_here
+
+###
+
+### Try to get non-existent order (Should return 404)
+GET {{baseUrl}}/api/orders/00000000-0000-0000-0000-000000000000
+Authorization: {{jwtToken}}
+
+###
