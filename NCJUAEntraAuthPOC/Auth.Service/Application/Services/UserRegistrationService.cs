@@ -168,17 +168,36 @@ public sealed class UserRegistrationService : IUserRegistrationService
         using var document = JsonDocument.Parse(payload);
         var root = document.RootElement;
 
+        // Safely read properties from the Graph response. Graph may omit some fields or return null values,
+        // so prefer TryGetProperty and check ValueKind to avoid throwing when a property is missing.
+        string ReadStringOrDefault(JsonElement element, string propertyName, string? fallback)
+        {
+            if (element.TryGetProperty(propertyName, out var prop) && prop.ValueKind == JsonValueKind.String)
+            {
+                var v = prop.GetString();
+                if (!string.IsNullOrWhiteSpace(v)) return v!;
+            }
+
+            return fallback ?? string.Empty;
+        }
+
+        bool ReadBoolOrDefault(JsonElement element, string propertyName, bool fallback)
+        {
+            if (element.TryGetProperty(propertyName, out var prop) && (prop.ValueKind == JsonValueKind.True || prop.ValueKind == JsonValueKind.False))
+            {
+                return prop.GetBoolean();
+            }
+
+            return fallback;
+        }
+
         return new RegisteredUserResponse
         {
-            Id = root.GetProperty("id").GetString() ?? string.Empty,
-            UserPrincipalName = root.GetProperty("userPrincipalName").GetString() ?? userPrincipalName,
-            DisplayName = root.GetProperty("displayName").GetString() ?? request.DisplayName,
-            Email = root.TryGetProperty("mail", out var mailElement) && !string.IsNullOrWhiteSpace(mailElement.GetString())
-                ? mailElement.GetString()!
-                : request.Email,
-            AccountEnabled = root.TryGetProperty("accountEnabled", out var enabledElement) && enabledElement.ValueKind is JsonValueKind.True or JsonValueKind.False
-                ? enabledElement.GetBoolean()
-                : request.AccountEnabled
+            Id = ReadStringOrDefault(root, "id", string.Empty),
+            UserPrincipalName = ReadStringOrDefault(root, "userPrincipalName", userPrincipalName),
+            DisplayName = ReadStringOrDefault(root, "displayName", request.DisplayName),
+            Email = ReadStringOrDefault(root, "mail", request.Email),
+            AccountEnabled = ReadBoolOrDefault(root, "accountEnabled", request.AccountEnabled)
         };
     }
 

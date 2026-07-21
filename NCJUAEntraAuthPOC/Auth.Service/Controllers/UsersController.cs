@@ -43,6 +43,11 @@ public sealed class UsersController : ControllerBase
         CancellationToken cancellationToken)
     {
         var createdUser = await _userRegistrationService.RegisterAsync(request, cancellationToken);
-        return CreatedAtAction(nameof(RegisterAsync), new { id = createdUser.Id }, createdUser);
+
+        // CreatedAtAction was pointing to this same POST action which has no route parameter for "id",
+        // causing URL generation failures and a 500 response. Return a Created result with an explicit
+        // location instead.
+        var location = $"/api/Users/{createdUser.Id}";
+        return Created(location, createdUser);
     }
 }
