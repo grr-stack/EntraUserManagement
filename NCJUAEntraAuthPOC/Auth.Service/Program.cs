@@ -29,6 +29,9 @@ builder.Services.AddHttpClient<IUserRegistrationService, UserRegistrationService
     client.BaseAddress = new Uri(graphOptions.BaseUrl);
 });
 
+// Allow services to read the current HTTP context (used to optionally forward an incoming bearer token)
+builder.Services.AddHttpContextAccessor();
+
 // Add CORS to allow Swagger UI and frontend applications
 builder.Services.AddCors(options =>
 {
