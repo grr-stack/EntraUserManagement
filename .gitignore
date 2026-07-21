@@ -1,0 +1,52 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+
+# Rider
+.idea/
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Visual Studio Code
+.vscode/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# dotnet
+project.lock.json
+project.assets.json
+
+# Local settings
+*.slnx
+
+# Ignore JetBrains Rider directories
+.idea/
+
+# Ignore generated Proto files
+**/obj/**
+**/bin/**
+
+# .NET user secrets
+secrets.json
+
+# Ignore VS Code workspace files
+*.code-workspace
+
+# Ignore local appsettings and http request files that may contain secrets
+**/appsettings.json
+**/requests.http

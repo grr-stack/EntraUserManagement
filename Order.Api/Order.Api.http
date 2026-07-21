@@ -1,0 +1,12 @@
+@Order.Api_HostAddress = http://localhost:5099
+
+POST {{Order.Api_HostAddress}}/api/orders
+Content-Type: application/json
+Accept: application/json
+
+{
+  "customerName": "Guru",
+  "amount": 1000
+}
+
+###
